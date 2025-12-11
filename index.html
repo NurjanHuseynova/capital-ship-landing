@@ -338,29 +338,50 @@ Helping Marine and Offshore Clients Navigate Challenges Through Expert-Driven, C
     <a href="#" class="back-to-top"><i class="lni lni-chevron-up"></i></a>
 
     <!--====== BACK TOP TOP PART ENDS ======-->
-<script src="https://cdn.emailjs.com/dist/email.min.js"></script>
-
 <script>
-    emailjs.init("mPjtgJy18s__7FA7D");
+document.getElementById("contact-form").addEventListener("submit", async function(e) {
+    e.preventDefault();
 
-    function sendContactForm(event) {
-        event.preventDefault();
+    const name = document.getElementById("name").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const phoneNumber = document.getElementById("number").value.trim();
+    const subject = document.getElementById("subject").value.trim();
+    const message = document.getElementById("message").value.trim();
 
-        const form = event.target;
+    const payload = {
+        name,
+        email,
+        phoneNumber,
+        subject,
+        message
+    };
 
-
-        emailjs.sendForm("service_2b9zues", "template_236omlh", form)
-        .then(function(response) {
-            document.querySelector(".form-message").innerText = "Mesaj uğurla göndərildi!";
-            form.reset();
-        }, function(error) {
-            console.error("EmailJS Error:", error);
-            document.querySelector(".form-message").innerText = "Xəta baş verdi. Zəhmət olmasa yenidən cəhd edin.";
+    try {
+        const response = await fetch("http://odemarine.somee.com/api/email/send-email", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(payload)
         });
-    }
 
-    document.getElementById("contact-form").addEventListener("submit", sendContactForm);
+        const result = await response.json();
+
+        if (response.ok) {
+            document.querySelector(".form-message").innerHTML = "Your message has been sent successfully!";
+            document.querySelector(".form-message").style.color = "lime";
+            document.getElementById("contact-form").reset();
+        } else {
+            document.querySelector(".form-message").innerHTML = "An error occurred: " + (result.message || "Unexpected error");
+            document.querySelector(".form-message").style.color = "red";
+        }
+    } catch (error) {
+        document.querySelector(".form-message").innerHTML = "Failed to connect to the server.";
+        document.querySelector(".form-message").style.color = "red";
+    }
+});
 </script>
+
 
 
     
